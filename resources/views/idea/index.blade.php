@@ -55,7 +55,11 @@
 
         {{-- Modal --}}
         <x-modal name="create-idea" title="New Idea">
-            <form x-data="{status: 'pending'}" method="POST" action="{{ route('ideas.store') }}">
+            <form
+                x-data="{status: 'pending', newLink: '', links: []}"
+                method="POST"
+                action="{{ route('ideas.store') }}"
+            >
                 @csrf
 
                 <div class="space-y-6">
@@ -74,6 +78,47 @@
                         </div>
 
                         <x-form.error name="status" />
+                    </div>
+                    <div>
+                        <fieldset class="space-y-3">
+                            <legend class="label">Links</legend>
+
+                            <template x-for="(link, index) in links">
+                                <div class="flex gap-x-2 items-center">
+                                    <label for="" class="sr-only">Link</label>
+                                    <input class="input" name="links[]" x-model="links[index]" />
+                                    <button @click="links.splice(index, 1)" type="button" aria-label="Remove link" class="form-muted-icon">
+                                        <x-icons.close  />
+                                    </button>
+                                </div>
+                            </template>
+
+                            <div class="flex gap-x-2 items-center" id="link-field">
+                                <input
+                                    x-model="newLink"
+                                    type="url"
+                                    id="new-link"
+                                    data-test="new-link"
+                                    placeholder="http://example.com"
+                                    autocomplete="url"
+                                    class="input flex-1"
+                                    spellcheck="false"
+                                    x-ref="newLinkInput"
+                                >
+                                <button 
+                                    type="button" 
+                                    data-test="submit-new-link-button"
+                                    class="rotate-45 form-muted-icon" 
+                                    @click="if($refs.newLinkInput.checkValidity()) { links.push(newLink.trim()); newLink = '' }"
+                                    :disabled="newLink.trim().length === 0"    
+                                    aria-label="Add a new link"
+                                >
+                                    <x-icons.close />
+                                </button>
+                            </div>
+                        </fieldset>
+
+                        {{-- <pre x-text="JSON.stringify(links)"></pre> --}}
                     </div>
                     {{-- <x-form.field label="Links" name="links" /> --}}
 

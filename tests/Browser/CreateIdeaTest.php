@@ -10,6 +10,10 @@ it('creates a new idea', function() {
     ->click('@create-idea-button')
     ->fill('title', 'Test title')
     ->fill('description', 'Test description')
+    ->fill('@new-link', 'https://laracasts.com')
+    ->click('@submit-new-link-button')
+    ->fill('@new-link', 'https://laravel.com')
+    ->click('@submit-new-link-button')
     ->click('@button-status-in_progress')
     ->click('Create')
     ->assertPathIs('/ideas');
@@ -24,6 +28,7 @@ it('creates a new idea', function() {
       'title' => 'Test title',
       'description' => 'Test description',
       'status' => 'in_progress',
+      'links' => ['https://laracasts.com', 'https://laravel.com']
     ]);
     
     expect(Idea::count())->toBe(1);
