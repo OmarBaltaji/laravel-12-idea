@@ -10,6 +10,7 @@
                 class="mt-10 cursor-pointer h-32 w-full text-left" 
                 is="button"
                 type="button"
+                data-test="create-idea-button"
             >
                 <p>What's the idea?</p>
             </x-card>
@@ -66,7 +67,7 @@
 
                         <div class="flex gap-x-3">
                             @foreach (App\IdeaStatus::cases() as $status)
-                                <button type="button" @click="status = @js($status->value)" class="btn flex-1 h-10" :class="{'btn-outlined': @js($status->value) !== status}">{{ $status->label() }}</button>
+                                <button data-test="button-status-{{ $status->value }}" type="button" @click="status = @js($status->value)" class="btn flex-1 h-10" :class="{'btn-outlined': @js($status->value) !== status}">{{ $status->label() }}</button>
                             @endforeach
 
                             <input type="hidden" name="status" :value="status" />
