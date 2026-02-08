@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreIdeaRequest;
 use App\IdeaStatus;
 use App\Models\Idea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class IdeaController extends Controller
 {
@@ -16,18 +18,14 @@ class IdeaController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->status;
-
-        if (! in_array($status, IdeaStatus::values())) {
-            $status = null;
-        }
-
-        $ideas = Auth::user()
+        $user = Auth::user();
+        $ideas = $user
             ->ideas()
-            ->when($status, fn ($query, $status) => $query->where('status', $status))
+            ->when(in_array($request->status, IdeaStatus::values()), fn ($query) => $query->where('status', $request->status))
+            ->latest()
             ->get();
 
-        return view('idea.index', ['ideas' => $ideas, 'statusCounts' => Idea::statusCount(Auth::user())]);
+        return view('idea.index', ['ideas' => $ideas, 'statusCounts' => Idea::statusCount($user)]);
     }
 
     /**
@@ -41,17 +39,23 @@ class IdeaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): void
+    public function store(StoreIdeaRequest $request)
     {
-        //
+        Auth::user()->ideas()->create($request->validated());
+
+        return to_route('ideas.index')->with('success', 'New idea created');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Idea $idea): void
+    public function show(Idea $idea)
     {
-        //
+        abort_unless($idea->user_id === Auth::id(), 403);
+        
+        return view('idea.show', [
+            'idea' => $idea,
+        ]);
     }
 
     /**
@@ -73,8 +77,12 @@ class IdeaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Idea $idea): void
+    public function destroy(Idea $idea)
     {
-        //
+        // authorize
+        abort_unless($idea->user_id === Auth::id(), 403);
+
+        $idea->delete();
+        return to_route('ideas.index')->with('success', 'Idea deleted successfully.');
     }
 }
