@@ -20,6 +20,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/ideas', [IdeaController::class, 'index'])->name('ideas.index');
+    Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store');
     Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show');
+    Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('ideas.delete');
     Route::post('/logout', [SessionsController::class, 'destroy']);
 });
