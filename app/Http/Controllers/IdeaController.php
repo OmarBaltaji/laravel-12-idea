@@ -7,9 +7,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreIdeaRequest;
 use App\IdeaStatus;
 use App\Models\Idea;
+use App\Services\Idea\CreateIdea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class IdeaController extends Controller
 {
@@ -39,9 +39,9 @@ class IdeaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreIdeaRequest $request)
+    public function store(StoreIdeaRequest $request, CreateIdea $createIdea)
     {
-        Auth::user()->ideas()->create($request->validated());
+        $createIdea->handle($request->safe()->all());
 
         return to_route('ideas.index')->with('success', 'New idea created');
     }
@@ -52,7 +52,7 @@ class IdeaController extends Controller
     public function show(Idea $idea)
     {
         abort_unless($idea->user_id === Auth::id(), 403);
-        
+
         return view('idea.show', [
             'idea' => $idea,
         ]);
@@ -83,6 +83,7 @@ class IdeaController extends Controller
         abort_unless($idea->user_id === Auth::id(), 403);
 
         $idea->delete();
+
         return to_route('ideas.index')->with('success', 'Idea deleted successfully.');
     }
 }
