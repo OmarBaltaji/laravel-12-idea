@@ -2,9 +2,15 @@
 
 use App\Models\Idea;
 use App\Models\User;
+// use Illuminate\Http\UploadedFile;
+// use Illuminate\Support\Facades\Storage;
 
 it('creates a new idea', function() {
   $this->actingAs($user = User::factory()->create());
+
+  // Storage::fake('public');
+  // $file = UploadedFile::fake()->image('image.png');
+  // $filePath = $file->getRealPath();
 
   visit('/ideas')
     ->click('@create-idea-button')
@@ -14,7 +20,12 @@ it('creates a new idea', function() {
     ->click('@submit-new-link-button')
     ->fill('@new-link', 'https://laravel.com')
     ->click('@submit-new-link-button')
+    ->fill('@new-step', 'step 1')
+    ->click('@submit-new-step-button')
+    ->fill('@new-step', 'step 2')
+    ->click('@submit-new-step-button')
     ->click('@button-status-in_progress')
+    // ->attach('@image-field', $filePath)
     ->click('Create')
     ->assertPathIs('/ideas');
 
@@ -24,7 +35,7 @@ it('creates a new idea', function() {
     //   'description' => 'Test description',
     //   'status' => 'in_progress',
     // ]);
-    expect($user->ideas()->first())->toMatchArray([
+    expect($idea = $user->ideas()->first())->toMatchArray([
       'title' => 'Test title',
       'description' => 'Test description',
       'status' => 'in_progress',
@@ -33,5 +44,6 @@ it('creates a new idea', function() {
     
     expect(Idea::count())->toBe(1);
 
+    expect($idea->steps)->toHaveCount(2);
     // ->debug();
 });
