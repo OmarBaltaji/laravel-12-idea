@@ -7,7 +7,7 @@
       </a>
 
       <div class="flex items-center gap-x-3">
-        <button class="btn btn-outlined">
+        <button x-data class="btn btn-outlined" data-test="edit-idea-button" idea="{{ $idea }}" @click="$dispatch('open-modal', 'edit-idea')">
           <x-icons.external />
           Edit Idea
         </button>
@@ -80,5 +80,7 @@
         </div>
       @endif
     </div>
+
+    <x-idea.modal :idea="$idea" />
   </div>
 </x-layout>
