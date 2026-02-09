@@ -12,7 +12,7 @@ it('logs in a user', function () {
         ->fill('password', 'P@ssw0rd')
         ->click('@login-button')
         ->assertPathIs('/ideas');
-        // ->assertRoute('ideas.index')
+    // ->assertRoute('ideas.index')
 
     $this->assertAuthenticated();
 });

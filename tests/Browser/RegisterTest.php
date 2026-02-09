@@ -11,7 +11,7 @@ it('registers a user', function () {
         ->fill('password', 'P@sww0rd')
         ->click('Create Account')
         ->assertPathIs('/ideas');
-        // ->assertRoute('ideas.index')
+    // ->assertRoute('ideas.index')
 
     $this->assertAuthenticated();
 
