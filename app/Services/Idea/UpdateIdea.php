@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Idea;
 
 use App\Models\Idea;
-use App\Models\User;
-use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Support\Facades\DB;
 
 class UpdateIdea
@@ -27,7 +25,7 @@ class UpdateIdea
 
         DB::transaction(function () use ($data, $idea, $attributes): void {
             $idea->update($data);
-            
+
             $idea->steps()->delete();
             $idea->steps()->createMany($attributes['steps'] ?? []);
         });

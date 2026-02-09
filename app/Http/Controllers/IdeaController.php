@@ -75,7 +75,7 @@ class IdeaController extends Controller
     {
         $updateIdea->handle($idea, $request->safe()->all());
 
-        return back()->with('success', "Idea updated");
+        return back()->with('success', 'Idea updated');
     }
 
     /**

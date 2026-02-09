@@ -3,44 +3,41 @@
 use App\Models\User;
 use App\Notifications\EmailChanged;
 
-it('requires authentication', function() {
-  // visit(route('profile.edit'))->assertPathIs('/login');
-  $this->get(route('profile.edit'))->assertRedirect('/login');
+it('requires authentication', function () {
+    // visit(route('profile.edit'))->assertPathIs('/login');
+    $this->get(route('profile.edit'))->assertRedirect('/login');
 });
 
-it('edits a profile', function() {
-  $user = User::factory()->create();
+it('edits a profile', function () {
+    $user = User::factory()->create();
 
-  $this->actingAs($user);
+    $this->actingAs($user);
 
-  visit(route('profile.edit'))
-    ->assertValue('name', $user->name)
-    ->fill('name', 'New Name')
-    ->fill('email', 'newmail@mail.com')
-    ->click('Update Account')
-    ->assertSee('Profile updated');
+    visit(route('profile.edit'))
+        ->assertValue('name', $user->name)
+        ->fill('name', 'New Name')
+        ->fill('email', 'newmail@mail.com')
+        ->click('Update Account')
+        ->assertSee('Profile updated');
 
-  expect($user->fresh())->toMatchArray([
-    'name' => 'New Name',
-    'email' => 'newmail@mail.com',
-  ]);
+    expect($user->fresh())->toMatchArray([
+        'name' => 'New Name',
+        'email' => 'newmail@mail.com',
+    ]);
 });
 
-it('notifies the original email if updated', function() {
-  $user = User::factory()->create();
-  $originalEmail = $user->email;
-  $this->actingAs($user);
+it('notifies the original email if updated', function () {
+    $user = User::factory()->create();
+    $originalEmail = $user->email;
+    $this->actingAs($user);
 
-  Notification::fake();
+    Notification::fake();
 
-  visit(route('profile.edit'))
-    ->assertValue('name', $user->name)
-    ->fill('email', 'newmail@mail.com')
-    ->click('Update Account')
-    ->assertSee('Profile updated');
+    visit(route('profile.edit'))
+        ->assertValue('name', $user->name)
+        ->fill('email', 'newmail@mail.com')
+        ->click('Update Account')
+        ->assertSee('Profile updated');
 
-  Notification::assertSentOnDemand(EmailChanged::class, function(EmailChanged $notification, $routes, $notifiable) use ($originalEmail) {
-    return $notifiable->routes['mail'] === $originalEmail;
-  });
+    Notification::assertSentOnDemand(EmailChanged::class, fn (EmailChanged $notification, $routes, $notifiable) => $notifiable->routes['mail'] === $originalEmail);
 });
-

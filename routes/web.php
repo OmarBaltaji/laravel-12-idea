@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Route::middleware('can:workWith,idea')->group(function() {
-    Route::can('workWith', 'idea')->group(function() {
+    Route::can('workWith', 'idea')->group(function () {
         Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show');
         Route::patch('/ideas/{idea}', [IdeaController::class, 'update'])->name('ideas.update');
         Route::delete('/ideas/{idea}', [IdeaController::class, 'destroy'])->name('ideas.delete');
