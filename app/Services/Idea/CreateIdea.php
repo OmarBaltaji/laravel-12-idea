@@ -6,7 +6,6 @@ namespace App\Services\Idea;
 
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CreateIdea
@@ -23,6 +22,10 @@ class CreateIdea
 
         if ($attributes['image'] ?? false) {
             $data['image_path'] = $attributes['image']->store('ideas', 'public');
+
+            if ($data['image_path'] === false) {
+                throw new \RuntimeException('Failed to store uploaded image.');
+            }
         }
 
         $steps = collect($attributes['steps'] ?? [])->map(fn ($step) => ['description' => $step])->toArray();
